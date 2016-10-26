@@ -11,6 +11,7 @@
 		09B036711C5E864C001EA5B7 /* DipUI.h in Headers */ = {isa = PBXBuildFile; fileRef = 09B036111C5E8028001EA5B7 /* DipUI.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		09B036771C5E86BE001EA5B7 /* StoryboardInstantiatable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09B036281C5E812D001EA5B7 /* StoryboardInstantiatable.swift */; };
 		09D387641D8E97E600483D0D /* DipUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 09B0365A1C5E836B001EA5B7 /* DipUI.framework */; };
+		4D95E8721DC0CC4600F79A65 /* Dip.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4D95E8711DC0CC4600F79A65 /* Dip.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +29,7 @@
 		09B0361F1C5E8029001EA5B7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		09B036281C5E812D001EA5B7 /* StoryboardInstantiatable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = StoryboardInstantiatable.swift; path = ../../Sources/StoryboardInstantiatable.swift; sourceTree = "<group>"; };
 		09B0365A1C5E836B001EA5B7 /* DipUI.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = DipUI.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		4D95E8711DC0CC4600F79A65 /* Dip.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Dip.framework; path = "../../../../../Library/Developer/Xcode/DerivedData/Analysis-fhynhkrexpabnldsmdyiwiivvyft/Build/Products/Debug/Dip.framework"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -43,6 +45,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4D95E8721DC0CC4600F79A65 /* Dip.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -67,6 +70,7 @@
 				09B0361C1C5E8029001EA5B7 /* DipUITests */,
 				09B0360F1C5E8028001EA5B7 /* Products */,
 				0969D1B81C60098400A2142B /* Podspec Metadata */,
+				4D95E8701DC0CC4600F79A65 /* Frameworks */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -101,6 +105,14 @@
 				09B0361F1C5E8029001EA5B7 /* Info.plist */,
 			);
 			path = DipUITests;
+			sourceTree = "<group>";
+		};
+		4D95E8701DC0CC4600F79A65 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				4D95E8711DC0CC4600F79A65 /* Dip.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
