@@ -3,6 +3,7 @@
 [![Carthage Compatible](https://img.shields.io/badge/Carthage-compatible-4BC51D.svg?style=flat)](https://github.com/Carthage/Carthage)
 [![License](https://img.shields.io/cocoapods/l/Dip-UI.svg?style=flat)](http://cocoapods.org/pods/Dip-UI)
 [![Platform](https://img.shields.io/cocoapods/p/Dip-UI.svg?style=flat)](http://cocoapods.org/pods/Dip-UI)
+[![Swift Version](https://img.shields.io/badge/Swift-3.0--3.1-F16D39.svg?style=flat)](https://developer.apple.com/swift)
 
 # Dip-UI
 
@@ -85,11 +86,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     container.register(tag: "myVC") { MyViewController() }
       .resolvingProperties { container, controller in
-        container.logger    = try container.resolve() as Logger
-        container.tracker   = try container.resolve() as Tracker
-        container.router 	= try container.resolve() as Router
-        container.presenter = try container.resolve() as MyViewControllerPresenter
-        container.service 	= try container.resolve() as MyViewControllerService
+        controller.logger    = try container.resolve() as Logger
+        controller.tracker   = try container.resolve() as Tracker
+        controller.router 	= try container.resolve() as Router
+        controller.presenter = try container.resolve() as MyViewControllerPresenter
+        controller.service 	= try container.resolve() as MyViewControllerService
       }
       
       DependencyContainer.uiContainers = [container]
