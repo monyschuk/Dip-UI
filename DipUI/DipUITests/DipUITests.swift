@@ -29,6 +29,7 @@ import XCTest
   import UIKit
   typealias Storyboard = UIStoryboard
   typealias ViewController = UIViewController
+  typealias StoryboardName = String
   
   extension UIStoryboard {
     @nonobjc
@@ -41,10 +42,11 @@ import XCTest
   import AppKit
   typealias Storyboard = NSStoryboard
   typealias ViewController = NSViewController
+  typealias StoryboardName = NSStoryboard.Name
   
   extension NSStoryboard {
     @discardableResult func instantiateViewControllerWithIdentifier(_ identifier: String) -> NSViewController {
-      return instantiateController(withIdentifier: identifier) as! NSViewController
+      return instantiateController(withIdentifier: NSStoryboard.SceneIdentifier(identifier)) as! NSViewController
     }
   }
   
@@ -65,7 +67,7 @@ class DipUITests: XCTestCase {
   
   let storyboard: Storyboard = {
     let bundle = Bundle(for: DipUITests.self)
-    return Storyboard(name: storyboardName, bundle: bundle)
+    return Storyboard(name: StoryboardName(storyboardName), bundle: bundle)
   }()
   
   func testThatViewControllerHasDipTagProperty() {
@@ -97,7 +99,7 @@ class DipUITests: XCTestCase {
   func testThatItResolvesIfContainerAndStringTagAreSet() {
     var resolved = false
     let container = DependencyContainer()
-    container.register(tag: "vc") { DipViewController() }
+    container.register(storyboardType: DipViewController.self, tag: "vc")
       .resolvingProperties { _, _ in
         resolved = true
     }
@@ -110,7 +112,7 @@ class DipUITests: XCTestCase {
   func testThatItResolvesIfContainerAndNilTagAreSet() {
     var resolved = false
     let container = DependencyContainer()
-    container.register() { NilTagViewController() }
+    container.register(storyboardType: NilTagViewController.self)
       .resolvingProperties { _, _ in
         resolved = true
     }
@@ -122,7 +124,7 @@ class DipUITests: XCTestCase {
 
   func testThatItDoesNotResolveIfTagDoesNotMatch() {
     let container = DependencyContainer()
-    container.register(tag: "wrong tag") { DipViewController() }
+    container.register(storyboardType: DipViewController.self, tag: "wrong tag")
       .resolvingProperties { _, _ in
         XCTFail("Should not resolve when container is not set.")
     }
@@ -134,7 +136,7 @@ class DipUITests: XCTestCase {
   func testThatItResolvesWithDefinitionWithNoTag() {
     var resolved = false
     let container = DependencyContainer()
-    container.register() { DipViewController() }
+    container.register(storyboardType: DipViewController.self)
       .resolvingProperties { _, _ in
         resolved = true
     }
@@ -148,7 +150,7 @@ class DipUITests: XCTestCase {
     var resolved = false
     let container1 = DependencyContainer()
     let container2 = DependencyContainer()
-    container2.register(tag: "vc") { DipViewController() }
+    container2.register(storyboardType: DipViewController.self, tag: "vc")
       .resolvingProperties { container, _ in
         XCTAssertTrue(container === container2)
         resolved = true

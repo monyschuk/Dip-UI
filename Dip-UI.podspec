@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = "Dip-UI"
-  s.version          = "1.1"
+  s.version          = "2.0"
   s.summary          = "Dip UI extension"
 
   s.description      = <<-DESC
@@ -25,6 +25,6 @@ Pod::Spec.new do |s|
 
   s.source_files = 'Sources/**/*.swift'
 
-  s.dependency 'Dip', '~> 5.0'
+  s.dependency 'Dip', '~> 6.0'
 
 end

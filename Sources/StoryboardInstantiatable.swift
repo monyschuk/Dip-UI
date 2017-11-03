@@ -26,7 +26,12 @@ import Dip
 
 extension DependencyContainer {
   ///Containers that will be used to resolve dependencies of instances, created by stroyboards.
-  static public var uiContainers: [DependencyContainer] = []
+  static public var uiContainers: [DependencyContainer] = {
+    #if os(watchOS)
+      swizzleAwakeWithContext
+    #endif
+    return []
+  }()
   
   /**
    Resolves dependencies of passed in instance.
@@ -72,6 +77,35 @@ extension DependencyContainer {
    */
   public func resolveDependencies<T>(of instance: T, tag: Tag? = nil) throws {
     _ = try resolve(tag: tag) { (_: () throws -> T) in instance }
+  }
+  
+  /**
+   Register storyboard type `T` which has to conform to `StoryboardInstantiatable` and associate it with an optional tag.
+   
+   - parameters:
+      - type: Storyboard type to register definition for.
+      - tag: The arbitrary tag to associate this factory with. Pass `nil` to associate with any tag. Default value is `nil`.
+   
+   - returns: A registered definition.
+   
+   - note: This method will register concrete types. If you need to register 
+           as abstract types you should use standard `register` method from Dip.
+           You should cast the factory return type to the protocol you want to 
+           register it for (unless you want to register concrete type) or 
+           provide `type` parameter.
+   
+   - seealso: `Definition`, `ComponentScope`, `DependencyTagConvertible`
+   
+   **Example**:
+   ```swift
+   // Register MyViewController
+   container.register(storyboardType: MyViewController.self)
+   // or
+   container.register(tag: "myVC") { MyViewController() as MyViewControllerType }
+   ```
+   */
+  public func register<T: NSObject>(storyboardType type: T.Type, tag: DependencyTagConvertible? = nil) -> Dip.Definition<T, ()> where T: StoryboardInstantiatable {
+    return register(.unique, type: type, tag: tag, factory: { T() })
   }
 
 }
@@ -144,7 +178,7 @@ extension NSObject {
   
   ///A string tag that will be used to resolve dependencies of this instance
   ///if it implements `StoryboardInstantiatable` protocol.
-  private(set) public var dipTag: String? {
+  @objc private(set) public var dipTag: String? {
     get {
       return objc_getAssociatedObject(self, DipTagAssociatedObjectKey) as? String
     }
@@ -154,9 +188,11 @@ extension NSObject {
       
       let tag = dipTag.map(DependencyContainer.Tag.String)
       
-      for container in DependencyContainer.uiContainers {
+      for (index, container) in DependencyContainer.uiContainers.enumerated() {
         do {
+          log("Trying to resolve \(type(of: self)) with UI container at index \(index)")
           try instantiatable.didInstantiateFromStoryboard(container, tag: tag)
+          log("Resolved \(type(of: self))")
           return
         } catch { }
       }
@@ -165,6 +201,12 @@ extension NSObject {
   
 }
   
+func log(_ message: Any) {
+  if Dip.LogLevel.Errors.rawValue <= Dip.logLevel.rawValue {
+    Dip.logger(logLevel, message)
+  }
+}
+
 #else
 import WatchKit
   
@@ -172,8 +214,8 @@ let swizzleAwakeWithContext: Void = {
   let originalSelector = #selector(WKInterfaceController.awake(withContext:))
   let swizzledSelector = #selector(WKInterfaceController.dip_awake(withContext:))
   
-  let originalMethod = class_getInstanceMethod(WKInterfaceController.self, originalSelector)
-  let swizzledMethod = class_getInstanceMethod(WKInterfaceController.self, swizzledSelector)
+  guard let originalMethod = class_getInstanceMethod(WKInterfaceController.self, originalSelector),
+    let swizzledMethod = class_getInstanceMethod(WKInterfaceController.self, swizzledSelector) else { return }
   
   let didAddMethod = class_addMethod(WKInterfaceController.self, originalSelector, method_getImplementation(swizzledMethod), method_getTypeEncoding(swizzledMethod))
   
@@ -185,13 +227,8 @@ let swizzleAwakeWithContext: Void = {
 }()
   
 extension WKInterfaceController: StoryboardInstantiatableType {
-  open override class func initialize() {
-    // make sure this isn't a subclass
-    guard self == WKInterfaceController.self else { return }
-    swizzleAwakeWithContext
-  }
 
-  func dip_awake(withContext context: AnyObject?) {
+  @objc func dip_awake(withContext context: AnyObject?) {
     defer { self.dip_awake(withContext: context) }
     guard let instantiatable = self as? StoryboardInstantiatable else { return }
     
@@ -200,6 +237,7 @@ extension WKInterfaceController: StoryboardInstantiatableType {
       break
     }
   }
+  
 }
 
 #endif
